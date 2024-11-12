@@ -15,9 +15,19 @@ for i in range(1, 11):
     cursor.execute("INSERT INTO Users (username, email, age, balance) VALUES (?, ?, ?, ?)",
                    (f'User{i}', f'example{i}@gmail.com', f'{i}0', 1000))
 
-cursor.execute("UPDATE Users SET balance = 500 WHERE id IN (1,3,5,7,9)")
+cursor.execute("SELECT id FROM Users")
+user_ids = cursor.fetchall()
 
-cursor.execute("DELETE FROM Users WHERE id IN (1,4,7,10)")
+"""Обновите balance у каждой 2ой записи начиная с 1ой на 500:"""
+for index, (user_id,) in enumerate(user_ids):
+    if index % 2 == 0:
+        cursor.execute("UPDATE Users SET balance = 500 WHERE id = ?", (user_id,))
+
+"""Удалите каждую 3ую запись в таблице начиная с 1ой:"""
+for index, (user_id,) in enumerate(user_ids):
+    if index % 3 == 0:
+        cursor.execute("DELETE FROM Users WHERE id = ?", (user_id,))
+
 
 cursor.execute("SELECT username, email, age, balance FROM Users WHERE age != ?", (60,))
 users = cursor.fetchall()
